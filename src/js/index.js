@@ -1,6 +1,7 @@
 import Search from "./model/search";
 import { elements, renderLoader, clearLoader } from "./view/base";
 import * as searchView from "./view/searchView";
+import Recipe from "./model/recipe";
 /**
  * Web application state
  * - Suchquery, Ergebnis

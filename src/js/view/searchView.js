@@ -24,7 +24,7 @@ export const clearSearchResult = () => {
   elements.pageButtons.innerHTML = "";
 };
 export const getInput = () => elements.searchInput.value;
-export const renderRecipes = (recipes, currentPage = 1, resultPerPage = 10) => {
+export const renderRecipes = (recipes, currentPage = 1, resultPerPage = 5) => {
   // Alle rezepten per 10 zerlegen und render
   const start = (currentPage - 1) * resultPerPage;
   const end = currentPage * resultPerPage;
