@@ -9,6 +9,7 @@ export default class Recipe {
     const result = await axios(
       "https://forkify-api.herokuapp.com/api/get?rId=" + this.id
     );
+    console.log(result.data.recipe);
     this.publisher = result.data.recipe.publisher;
     this.ingredients = result.data.recipe.ingredients;
     this.source = result.data.recipe.source_url;
@@ -16,5 +17,12 @@ export default class Recipe {
     this.publisher_url = result.data.recipe.publisher_url;
     this.title = result.data.recipe.title;
     this.social_rank = result.data.recipe.social_rank;
+  }
+  calcTime() {
+    // Für jede Zutaten braucht man ungefähr 5 Minuten, vorzubereiten
+    this.time = this.ingredients.length * 5;
+  }
+  calcPortion() {
+    this.portion = 4;
   }
 }

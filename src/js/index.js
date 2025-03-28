@@ -1,7 +1,8 @@
 import Search from "./model/search";
 import { elements, renderLoader, clearLoader } from "./view/base";
 import * as searchView from "./view/searchView";
-import Recipe from "./model/recipe";
+import Recipe from "./model/Recipe";
+import { renderRecipe, clearRecipe } from "./view/recipeView";
 /**
  * Web application state
  * - Suchquery, Ergebnis
@@ -12,6 +13,7 @@ import Recipe from "./model/recipe";
 
 const state = {};
 
+// Search Controller
 const searchController = async () => {
   // 1. Get the keyword from search bar
   const query = searchView.getInput();
@@ -43,3 +45,25 @@ elements.pageButtons.addEventListener("click", (e) => {
     searchView.renderRecipes(state.search.recipes, goto);
   }
 });
+
+// Recipe Controller
+const controlRecipe = async () => {
+  // 1. Get ID from URL
+  const id = window.location.hash.replace("#", "");
+  // 2. Create Recipe Model
+  state.recipe = new Recipe(id);
+  // 3. Prepare UI window
+  clearRecipe();
+  renderLoader(elements.recipeDiv);
+
+  // 4. Get the Recipe
+  await state.recipe.getRecipe();
+  // 5. Calculate the time and amount of ingredients of recipe
+  clearLoader();
+  state.recipe.calcTime();
+  state.recipe.calcPortion();
+  // 6. Show the recipe in window
+  renderRecipe(state.recipe);
+};
+window.addEventListener("hashchange", controlRecipe);
+window.addEventListener("load", controlRecipe);
