@@ -11,7 +11,7 @@ export default class Search {
       );
       return (this.recipes = result.data.recipes);
     } catch (error) {
-      alert("Asuudal garlaa");
+      alert("Got a problem here");
     }
   }
 }
