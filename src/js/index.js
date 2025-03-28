@@ -1,5 +1,5 @@
 import Search from "./model/search";
-import { elements } from "./view/base";
+import { elements, renderLoader, clearLoader } from "./view/base";
 import * as searchView from "./view/searchView";
 /**
  * Web application state
@@ -20,9 +20,11 @@ const searchController = async () => {
     // 3. Prepare UI for searching
     searchView.clearSearchQuery();
     searchView.clearSearchResult();
+    renderLoader(elements.searchResultDiv);
     // 4. Do search
     await state.search.doSearch();
     // 5. Show the result on screen
+    clearLoader();
     if (state.search.result != undefined) alert("Such echtes Essen");
     else searchView.renderRecipes(state.search.recipes);
   }
