@@ -3,6 +3,7 @@ import { elements, renderLoader, clearLoader } from "./view/base";
 import * as searchView from "./view/searchView";
 import Recipe from "./model/Recipe";
 import { renderRecipe, clearRecipe } from "./view/recipeView";
+import { highlightSelectedRecipe } from "./view/recipeView";
 /**
  * Web application state
  * - Suchquery, Ergebnis
@@ -55,6 +56,7 @@ const controlRecipe = async () => {
   // 3. Prepare UI window
   clearRecipe();
   renderLoader(elements.recipeDiv);
+  highlightSelectedRecipe(id);
 
   // 4. Get the Recipe
   await state.recipe.getRecipe();

@@ -8,6 +8,14 @@ const renderSpices = (spices) => `
         ${spices}
     </div>
 </li>`;
+
+export const highlightSelectedRecipe = (id) => {
+  const arr = Array.from(document.querySelectorAll(".results__link"));
+  arr.forEach((el) => el.classList.remove("results__link--active"));
+  const domObj = document.querySelector(`a[href*="${id}"]`);
+  if (domObj) domObj.classList.add("results__link--active");
+};
+
 export const renderRecipe = (recipe) => {
   // Show recipe on window
   const html = `<figure class="recipe__fig">
