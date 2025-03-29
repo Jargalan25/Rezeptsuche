@@ -4,6 +4,8 @@ import * as searchView from "./view/searchView";
 import Recipe from "./model/Recipe";
 import { renderRecipe, clearRecipe } from "./view/recipeView";
 import { highlightSelectedRecipe } from "./view/recipeView";
+import List from "./model/list";
+import * as listView from "./view/listView";
 /**
  * Web application state
  * - Suchquery, Ergebnis
@@ -51,21 +53,55 @@ elements.pageButtons.addEventListener("click", (e) => {
 const controlRecipe = async () => {
   // 1. Get ID from URL
   const id = window.location.hash.replace("#", "");
-  // 2. Create Recipe Model
-  state.recipe = new Recipe(id);
-  // 3. Prepare UI window
-  clearRecipe();
-  renderLoader(elements.recipeDiv);
-  highlightSelectedRecipe(id);
+  if (id) {
+    // 2. Create Recipe Model
+    state.recipe = new Recipe(id);
+    // 3. Prepare UI window
+    clearRecipe();
+    renderLoader(elements.recipeDiv);
+    highlightSelectedRecipe(id);
 
-  // 4. Get the Recipe
-  await state.recipe.getRecipe();
-  // 5. Calculate the time and amount of ingredients of recipe
-  clearLoader();
-  state.recipe.calcTime();
-  state.recipe.calcPortion();
-  // 6. Show the recipe in window
-  renderRecipe(state.recipe);
+    // 4. Get the Recipe
+    await state.recipe.getRecipe();
+    // 5. Calculate the time and amount of ingredients of recipe
+    clearLoader();
+    state.recipe.calcTime();
+    state.recipe.calcPortion();
+    // 6. Show the recipe in window
+    renderRecipe(state.recipe);
+  }
 };
-window.addEventListener("hashchange", controlRecipe);
-window.addEventListener("load", controlRecipe);
+["hashchange", "load"].forEach((e) =>
+  window.addEventListener(e, controlRecipe)
+);
+
+/**
+ * Ingredient Controller
+ */
+const controlList = () => {
+  // 1. Create ingredients Model
+  state.list = new List();
+  // 2. Clear the already showing ingredients from screen
+  listView.clearItems();
+  state.recipe.ingredients.forEach((n) => {
+    // 3. Add to the Model the ingredients
+    const item = state.list.addItem(n);
+    // 4. Render the ingredients
+    listView.renderItem(item);
+  });
+};
+
+elements.recipeDiv.addEventListener("click", (e) => {
+  if (e.target.matches(".recipe__btn, .recipe__btn *")) {
+    controlList();
+  }
+});
+
+elements.shoppingList.addEventListener("click", (e) => {
+  // Get data-itemid from clicked li element
+  const id = e.target.closest(".shopping__item").dataset.itemid;
+  // Delete the ingredient with this id from model
+  state.list.deleteItem(id);
+  // Delete the ingredient with this id from window
+  listView.deleteItem(id);
+});

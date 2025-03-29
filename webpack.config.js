@@ -10,7 +10,11 @@ module.exports = {
   },
   devtool: "inline-source-map",
   devServer: {
-    static: "./docs",
+    static: {
+      directory: path.join(__dirname, "docs"),
+    },
+    compress: true,
+    port: 9000,
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -21,13 +25,12 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(?:js|mjs|cjs)$/,
+        test: /\.m?js$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
           options: {
-            targets: "defaults",
-            presets: [["@babel/preset-env"]],
+            presets: ["@babel/preset-env"],
           },
         },
       },
