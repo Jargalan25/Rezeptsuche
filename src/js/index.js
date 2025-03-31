@@ -6,6 +6,7 @@ import { renderRecipe, clearRecipe } from "./view/recipeView";
 import { highlightSelectedRecipe } from "./view/recipeView";
 import List from "./model/list";
 import * as listView from "./view/listView";
+import Likes from "./model/Like";
 /**
  * Web application state
  * - Suchquery, Ergebnis
@@ -91,9 +92,34 @@ const controlList = () => {
   });
 };
 
+/**
+ * Like Controller
+ */
+const controlLike = () => {
+  // 1. Create Like model
+  if (!state.likes) state.likes = new Likes();
+  // 2. Get the id of the showing recipe
+  const currentRecipeId = state.recipe.id;
+  // 3. Check if the recipe liked
+  if (state.likes.isLiked(currentRecipeId)) {
+    // 4. If its liked, make it unlike
+    state.likes.deleteLike(currentRecipeId);
+  } else {
+    // 5. If its not, make it liked
+    state.likes.addLike(
+      currentRecipeId,
+      state.recipe.title,
+      state.recipe.publisher,
+      state.recipe.image_url
+    );
+  }
+};
+
 elements.recipeDiv.addEventListener("click", (e) => {
   if (e.target.matches(".recipe__btn, .recipe__btn *")) {
     controlList();
+  } else if (e.target.matches(".recipe__love, .recipe__love *")) {
+    controlLike();
   }
 });
 
