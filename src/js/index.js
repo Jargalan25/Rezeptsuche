@@ -7,6 +7,7 @@ import { highlightSelectedRecipe } from "./view/recipeView";
 import List from "./model/list";
 import * as listView from "./view/listView";
 import Likes from "./model/Like";
+import * as likesView from "./view/likesView";
 /**
  * Web application state
  * - Suchquery, Ergebnis
@@ -16,6 +17,7 @@ import Likes from "./model/Like";
  */
 
 const state = {};
+likesView.toggleLikeMenu(0);
 
 // Search Controller
 const searchController = async () => {
@@ -54,22 +56,24 @@ elements.pageButtons.addEventListener("click", (e) => {
 const controlRecipe = async () => {
   // 1. Get ID from URL
   const id = window.location.hash.replace("#", "");
+  // 2. Create Like model
+  if (!state.likes) state.likes = new Likes();
   if (id) {
-    // 2. Create Recipe Model
+    // 3. Create Recipe Model
     state.recipe = new Recipe(id);
-    // 3. Prepare UI window
+    // 4. Prepare UI window
     clearRecipe();
     renderLoader(elements.recipeDiv);
     highlightSelectedRecipe(id);
 
-    // 4. Get the Recipe
+    // 5. Get the Recipe
     await state.recipe.getRecipe();
-    // 5. Calculate the time and amount of ingredients of recipe
+    // 6. Calculate the time and amount of ingredients of recipe
     clearLoader();
     state.recipe.calcTime();
     state.recipe.calcPortion();
-    // 6. Show the recipe in window
-    renderRecipe(state.recipe);
+    // 7. Show the recipe in window
+    renderRecipe(state.recipe, state.likes.isLiked(id));
   }
 };
 ["hashchange", "load"].forEach((e) =>
@@ -96,23 +100,30 @@ const controlList = () => {
  * Like Controller
  */
 const controlLike = () => {
-  // 1. Create Like model
-  if (!state.likes) state.likes = new Likes();
-  // 2. Get the id of the showing recipe
+  // 1. Get the id of the showing recipe
   const currentRecipeId = state.recipe.id;
-  // 3. Check if the recipe liked
+  // 2. Check if the recipe liked
   if (state.likes.isLiked(currentRecipeId)) {
-    // 4. If its liked, make it unlike
+    // 3. If its liked, make it unlike
     state.likes.deleteLike(currentRecipeId);
+    // Stopping liked state
+    likesView.toggleLikeButton(false);
+    // Delete item from liked list
+    likesView.deleteLikes(currentRecipeId);
   } else {
-    // 5. If its not, make it liked
-    state.likes.addLike(
+    // 4. If its not, make it liked
+    const newLike = state.likes.addLike(
       currentRecipeId,
       state.recipe.title,
       state.recipe.publisher,
       state.recipe.image_url
     );
+    // Add recipe to list of likes
+    likesView.renderLike(newLike);
+    // Make a state liked
+    likesView.toggleLikeButton(true);
   }
+  likesView.toggleLikeMenu(state.likes.getNumberOfLikes());
 };
 
 elements.recipeDiv.addEventListener("click", (e) => {
