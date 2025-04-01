@@ -10,14 +10,13 @@ import Likes from "./model/Like";
 import * as likesView from "./view/likesView";
 /**
  * Web application state
- * - Suchquery, Ergebnis
- * - Rezept
- * - Gefällter Rezept
- * - Rezeptzutaten
+ * - Search query, Result
+ * - Recipy
+ * - Liked recipes
+ * - Recipe ingredients
  */
 
 const state = {};
-likesView.toggleLikeMenu(0);
 
 // Search Controller
 const searchController = async () => {
@@ -52,33 +51,46 @@ elements.pageButtons.addEventListener("click", (e) => {
   }
 });
 
-// Recipe Controller
+/**
+ * Recipe Controller
+ */
 const controlRecipe = async () => {
   // 1. Get ID from URL
   const id = window.location.hash.replace("#", "");
-  // 2. Create Like model
-  if (!state.likes) state.likes = new Likes();
   if (id) {
-    // 3. Create Recipe Model
+    // 2. Create Recipe Model
     state.recipe = new Recipe(id);
-    // 4. Prepare UI window
+
+    // 3. Prepare UI window
     clearRecipe();
     renderLoader(elements.recipeDiv);
     highlightSelectedRecipe(id);
 
-    // 5. Get the Recipe
+    // 4. Get the Recipe
     await state.recipe.getRecipe();
-    // 6. Calculate the time and amount of ingredients of recipe
+
+    // 5. Calculate the time and amount of ingredients of recipe
     clearLoader();
     state.recipe.calcTime();
     state.recipe.calcPortion();
-    // 7. Show the recipe in window
+
+    // 6. Show the recipe in window
     renderRecipe(state.recipe, state.likes.isLiked(id));
   }
 };
+
 ["hashchange", "load"].forEach((e) =>
   window.addEventListener(e, controlRecipe)
 );
+
+window.addEventListener("load", (e) => {
+  // Create Like model when site first runs
+  if (!state.likes) state.likes = new Likes();
+  // Checks whether liked list is empty or not
+  likesView.toggleLikeMenu(state.likes.getNumberOfLikes());
+  // If theres liked recipes, adding them to local storage
+  state.likes.likes.forEach((like) => likesView.renderLike(like));
+});
 
 /**
  * Ingredient Controller
@@ -86,11 +98,13 @@ const controlRecipe = async () => {
 const controlList = () => {
   // 1. Create ingredients Model
   state.list = new List();
+
   // 2. Clear the already showing ingredients from screen
   listView.clearItems();
   state.recipe.ingredients.forEach((n) => {
     // 3. Add to the Model the ingredients
     const item = state.list.addItem(n);
+
     // 4. Render the ingredients
     listView.renderItem(item);
   });
@@ -102,25 +116,30 @@ const controlList = () => {
 const controlLike = () => {
   // 1. Get the id of the showing recipe
   const currentRecipeId = state.recipe.id;
+
   // 2. Check if the recipe liked
   if (state.likes.isLiked(currentRecipeId)) {
     // 3. If its liked, make it unlike
     state.likes.deleteLike(currentRecipeId);
-    // Stopping liked state
+
+    // 4. Stopping liked state
     likesView.toggleLikeButton(false);
-    // Delete item from liked list
+
+    // 5. Delete item from liked list
     likesView.deleteLikes(currentRecipeId);
   } else {
-    // 4. If its not, make it liked
+    // 6. If its not, make it liked
     const newLike = state.likes.addLike(
       currentRecipeId,
       state.recipe.title,
       state.recipe.publisher,
       state.recipe.image_url
     );
-    // Add recipe to list of likes
+
+    // 7. Add recipe to list of likes
     likesView.renderLike(newLike);
-    // Make a state liked
+
+    // 8. Make a state liked
     likesView.toggleLikeButton(true);
   }
   likesView.toggleLikeMenu(state.likes.getNumberOfLikes());

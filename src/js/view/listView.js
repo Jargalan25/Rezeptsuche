@@ -1,5 +1,4 @@
 import { elements } from "./base";
-import axios from "axios";
 
 export const renderItem = (item) => {
   const html = `
