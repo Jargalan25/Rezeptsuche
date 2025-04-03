@@ -6,9 +6,14 @@ module.exports = {
   output: {
     filename: "js/main.js",
     path: path.resolve(__dirname, "docs"),
+    publicPath: "", // Ensure correct relative paths for GitHub Pages
   },
   devServer: {
-    contentBase: "./docs",
+    static: {
+      directory: path.resolve(__dirname, "docs"),
+    },
+    compress: true,
+    port: 9000,
   },
   plugins: [
     new HtmlWebpackPlugin({
