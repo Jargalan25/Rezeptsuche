@@ -10,5 +10,6 @@ Eine Übersicht über mögliche Suchbegriffe finden Sie hier:
 👉 https://forkify-api.herokuapp.com/phrases.html
 
 Ich hoffe, ich konnte damit ein kleines Beispiel meiner Fähigkeiten zeigen.
+
 Viel Spaß beim Ausprobieren!
 
