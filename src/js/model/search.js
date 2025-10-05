@@ -11,7 +11,7 @@ export default class Search {
       );
       return (this.recipes = result.data.recipes);
     } catch (error) {
-      alert("Got a problem here");
+      alert("Bitte suchen Sie nach anderen Gerichten oder Zutaten.");
     }
   }
 }
